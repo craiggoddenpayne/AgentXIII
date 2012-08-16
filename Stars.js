@@ -37,8 +37,17 @@ Stars.prototype.Tick = function () {
 };
 
 Stars.prototype.Render = function (context) {
-    context.fillStyle = "White";
-    for (var i = 0; i < 512; i++ ) {
+    for (var i = 0; i < 512; i++) {
+
+        var rand = Math.floor((Math.random() * 5) + 1);
+        switch(rand) {
+            case 0: context.fillStyle = "white"; break;
+            case 1: context.fillStyle = "yellow"; break;
+            case 2: context.fillStyle = "red"; break;
+            case 3: context.fillStyle = "cyan"; break;
+            case 4: context.fillStyle = "green"; break;
+        }
+
         context.fillRect(Stars.prototype.StarMapLayerX[i], Stars.prototype.StarMapLayerY[i], 2, 1);
     }
 };

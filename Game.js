@@ -1,6 +1,7 @@
 /// <reference path="Stars.js" />
 /// <reference path="Ship.js" />
 /// <reference path="TypeWriter.js" />
+/// <reference path="GameLogic.js" />
 
 function Game() {
     Game.prototype = this;
@@ -18,6 +19,7 @@ Game.prototype.TypeWriter = null;
 Game.prototype.TickCount = 0;
 Game.prototype.FPS = 0;
 Game.prototype.LastTickCount = new Date().getTime();
+Game.prototype.Logic = null;
 
 Game.prototype.Settings = {
     ShowFPS: true,
@@ -52,9 +54,12 @@ Game.prototype.Initialise = function () {
     controller.Context = controller.Canvas.getContext("2d");
     controller.Ship = new Ship();
     controller.Stars = new Stars();
+    controller.Logic = new GameLogic();
     controller.Stars.Initialise();
     controller.TypeWriter.Initialise();
+    controller.Logic.Initialise();
     
+
     //Starts the Game
     controller.Reset();
     setInterval(controller.Tick, 1);
@@ -62,7 +67,7 @@ Game.prototype.Initialise = function () {
 
     var settings = new TypeWriterSettings();
     settings.Speed = 80;
-    settings.Text = "Millions of lightyears away, in a far distant galaxy, AgentXIII is about to embark on one of the most important missions known to his race...                                                            To DESTROY ALL HUMANS!!!!";
+    settings.Text = "Millions of lightyears away, in a far distant galaxy, AgentXIII is about to embark on one of the most important missions known to man... To clear the galaxy of space junk!!!!";
     Game.prototype.TypeWriter.TypeText(settings, controller.Context);
 };
 
@@ -70,49 +75,53 @@ Game.prototype.Reset = function () {
     //reset the game
 };
 
+
 Game.prototype.Update = function () {//modifier) {
     var controller = Game.prototype;
     var ship = controller.Ship;
-    if (38 in keysDown) { // Player holding up
-        ship.Up();
+
+    if (controller.InGame) { //IN GAME!
+        if (38 in keysDown) { // Player holding up
+            ship.Up();
+        }
+        if (40 in keysDown) { // Player holding down
+            ship.Down();
+        }
+        if (37 in keysDown) { // Player holding left
+            ship.Left();
+        }
+        if (39 in keysDown) { // Player holding right
+            ship.Right();
+        }
+        if (90 in keysDown) { //Z
+            //ship.Shoot();
+        }
+        if (88 in keysDown) { //X          
+        }
     }
-    if (40 in keysDown) { // Player holding down
-        ship.Down();
-    }
-    if (37 in keysDown) { // Player holding left
-        ship.Left();
-    }
-    if (39 in keysDown) { // Player holding right
-        ship.Right();
-    }
-    if (90 in keysDown) { //Z
-        if (controller.ShowTitleScreen) {
+    else {
+        if (90 in keysDown) { //Z
             controller.ShowTitleScreen = false;
-            controller.FadeTitle = true;
+            controller.InGame = true;
         }
-        else {
-            ship.Shoot();
-        }
+        if (88 in keysDown) { //X
+            controller.ShowTitleScreen = false;
+            controller.ShowHelp = true;         
+        }   
     }
 };
 
 Game.prototype.ShowTitleScreen = true;
-Game.prototype.FadeTitle = false;
+Game.prototype.ShowHelp = false;
+Game.prototype.StartGame = false;
 Game.prototype.InGame = false;
 Game.prototype.FadeStepCount = 0;
 
 Game.prototype.Render = function () {
     var controller = Game.prototype;
 
-    //var images = Game.prototype.Images;
-    //if (images.BackgroundImageReady) {
-    //    controller.Context.drawImage(images.BackgroundImage, 0, 0);
-    //}
-
-    //Clear the Canvas
     controller.Context.fillStyle = "#000000";
     controller.Context.fillRect(0, 0, Game.prototype.Settings.ViewPort().width, Game.prototype.Settings.ViewPort().height);
-
     controller.Stars.Render(controller.Context);
 
     if (controller.ShowTitleScreen) {
@@ -132,23 +141,28 @@ Game.prototype.Render = function () {
         controller.Context.fillText("PRESS 'Z' TO START", 250, 350);
     }
 
-    if (controller.FadeTitle) {
-        
-        controller.FadeStepCount += 1;
-    }
     if (controller.InGame) { //IN GAME!
         controller.Ship.Render(controller.Context);
+        controller.Logic.Render(controller.Context);
 
+        controller.Context.fillStyle = "white";
+        controller.Context.font = "bold 20px Courier New";
+        controller.Context.fillText("Score:" + GameLogic.prototype.Score, 500, 450);
     }
 };
 
 Game.prototype.Tick = function () {
     var controller = Game.prototype;
     controller.Update();
-    var ship = Game.prototype.Ship;
-    ship.Tick();
     var stars = controller.Stars;
     stars.Tick();
+
+    if (controller.InGame) { //IN GAME!
+        var ship = Game.prototype.Ship;
+        ship.Tick();
+        var gameLogic = Game.prototype.Logic;
+        gameLogic.Tick();
+    }
 };
 
 function Images() {

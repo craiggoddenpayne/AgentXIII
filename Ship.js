@@ -34,8 +34,8 @@ Ship.prototype = {
         context.fillStyle = "cyan";
         context.beginPath();
         context.moveTo(ship.X, ship.Y);
-        context.lineTo(ship.X + 30, ship.Y + 10);
-        context.lineTo(ship.X, ship.Y + 20);
+        context.lineTo(ship.X + 30, ship.Y + 20);
+        context.lineTo(ship.X, ship.Y + 40);
         context.lineTo(ship.X, ship.Y);
         context.fill();
 
