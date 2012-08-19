@@ -10,6 +10,7 @@ function Game() {
 
 var keysDown = {};
 
+
 Game.prototype.Canvas = null;  
 Game.prototype.Context = null;
 Game.prototype.Ship = null;
@@ -20,6 +21,14 @@ Game.prototype.TickCount = 0;
 Game.prototype.FPS = 0;
 Game.prototype.LastTickCount = new Date().getTime();
 Game.prototype.Logic = null;
+Game.prototype.Debug = false;
+Game.prototype.GameStartTime = null;
+Game.prototype.ShowTitleScreen = true;
+Game.prototype.ShowHelp = false;
+Game.prototype.StartGame = false;
+Game.prototype.InGame = false;
+Game.prototype.FadeStepCount = 0;
+
 
 Game.prototype.Settings = {
     ShowFPS: true,
@@ -57,11 +66,8 @@ Game.prototype.Initialise = function () {
     controller.Logic = new GameLogic();
     controller.Stars.Initialise();
     controller.TypeWriter.Initialise();
-    controller.Logic.Initialise();
-    
+    controller.Logic.Initialise();    
 
-    //Starts the Game
-    controller.Reset();
     setInterval(controller.Tick, 1);
     setInterval(controller.Render, 37);
 
@@ -70,11 +76,6 @@ Game.prototype.Initialise = function () {
     settings.Text = "Millions of lightyears away, in a far distant galaxy, AgentXIII is about to embark on one of the most important missions known to man... To clear the galaxy of space junk!!!!";
     Game.prototype.TypeWriter.TypeText(settings, controller.Context);
 };
-
-Game.prototype.Reset = function () {
-    //reset the game
-};
-
 
 Game.prototype.Update = function () {//modifier) {
     var controller = Game.prototype;
@@ -103,19 +104,15 @@ Game.prototype.Update = function () {//modifier) {
         if (90 in keysDown) { //Z
             controller.ShowTitleScreen = false;
             controller.InGame = true;
+            controller.GameStartTime = new Date().getTime();
+
         }
         if (88 in keysDown) { //X
             controller.ShowTitleScreen = false;
-            controller.ShowHelp = true;         
-        }   
+            controller.ShowHelp = true;
+        }
     }
 };
-
-Game.prototype.ShowTitleScreen = true;
-Game.prototype.ShowHelp = false;
-Game.prototype.StartGame = false;
-Game.prototype.InGame = false;
-Game.prototype.FadeStepCount = 0;
 
 Game.prototype.Render = function () {
     var controller = Game.prototype;
@@ -147,7 +144,38 @@ Game.prototype.Render = function () {
 
         controller.Context.fillStyle = "white";
         controller.Context.font = "bold 20px Courier New";
-        controller.Context.fillText("Score:" + GameLogic.prototype.Score, 500, 450);
+        controller.Context.fillText("Score:" + GameLogic.prototype.Score, 500, 465);
+
+        controller.Context.fillStyle = "white";
+        controller.Context.font = "bold 20px Courier New";
+        var time = new Date().getTime() - controller.GameStartTime;
+        controller.Context.fillText((time / 1000) + "s", 50, 465);
+
+        controller.Context.beginPath();
+        controller.Context.arc(-100, 240, 150, 0, 2 * Math.PI, false);
+        controller.Context.fillStyle = "blue";
+        controller.Context.fill();
+    }
+
+    if (controller.Debug) {
+        var explosionCount = 0;
+        for (var i = 0; i < GameLogic.prototype.Explosions.length; i++) {
+            if (GameLogic.prototype.Explosions[i] != null)
+                explosionCount += 1;
+        }
+        var rockCount = 0;
+        for (i = 0; i < GameLogic.prototype.Rocks.length; i++) {
+            if (GameLogic.prototype.Rocks[i] != null)
+                rockCount += 1;
+        }
+            
+        controller.Context.fillStyle = "white";
+        controller.Context.font = "bold 16px Courier New";
+        controller.Context.fillText(
+            " Rocks:" + rockCount +
+            " Explosions:" + explosionCount + 
+            " ShipX:" + controller.Ship.X +
+            " ShipY:" + controller.Ship.Y, 5, 465);
     }
 };
 
