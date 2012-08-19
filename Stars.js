@@ -7,10 +7,11 @@ Stars.prototype.TickType = 0;
 Stars.prototype.StarMapLayerX = [];
 Stars.prototype.StarMapLayerY = [];
 Stars.prototype.StarMapLayerTickCount = [];
+Stars.prototype.StarCount = 150;
 
 Stars.prototype.Initialise = function () {
 
-    for (var i = 0; i < 512; i++) {
+    for (var i = 0; i < Stars.prototype.StarCount; i++) {
         var randomX = Math.floor((Math.random() * Game.prototype.Settings.ViewPort().width) + 1);
         var randomY = Math.floor((Math.random() * Game.prototype.Settings.ViewPort().height) + 1);
         Stars.prototype.StarMapLayerX[i] = randomX;
@@ -20,7 +21,7 @@ Stars.prototype.Initialise = function () {
 
 Stars.prototype.Tick = function () {
 
-    for (var i = 0; i < 512; i++) {
+    for (var i = 0; i < Stars.prototype.StarCount; i++) {
         //this should move the stars in four layers
         if ((i % (Stars.prototype.TickType + 1)) == 0) {
             Stars.prototype.StarMapLayerX[i] -= 1;
@@ -37,7 +38,7 @@ Stars.prototype.Tick = function () {
 };
 
 Stars.prototype.Render = function (context) {
-    for (var i = 0; i < 512; i++) {
+    for (var i = 0; i < Stars.prototype.StarCount; i++) {
 
         var rand = Math.floor((Math.random() * 8) + 1);
         switch (rand) {

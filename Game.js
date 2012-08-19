@@ -69,7 +69,7 @@ Game.prototype.Initialise = function () {
     controller.Logic.Initialise();    
 
     setInterval(controller.Tick, 5);
-    setInterval(controller.Render, 70);
+    setInterval(controller.Render, 60);
 
     var settings = new TypeWriterSettings();
     settings.Speed = 80;
