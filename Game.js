@@ -116,6 +116,9 @@ Game.prototype.Update = function () {//modifier) {
         }
     }
     else {
+        if (controller.GameOver)
+            return;
+
         if (90 in Game.prototype.keysDown) { //Z
             controller.ShowTitleScreen = false;
             controller.ShowHelp = false;
@@ -304,11 +307,4 @@ Game.prototype.Tick = function () {
         var gameLogic = Game.prototype.Logic;
         gameLogic.Tick();
     }
-};
-
-function Images() {
-};
-Images.prototype = {
-   CogImage:null,
-   CogImageReady: false
 };
