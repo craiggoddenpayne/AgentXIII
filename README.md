@@ -1,5 +1,5 @@
 AgentXIII
 =========
 
-Entry for JS13k Contest - http://js13kgames.com/
-The game is a space type game - so far the title screen is complete
+Completed Entry for JS13k Contest - http://js13kgames.com/
+I dont think its that bad for my first game, the code needs refactoring a lot though!
