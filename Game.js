@@ -20,6 +20,7 @@ Game.prototype.TypeWriter = null;
 Game.prototype.TickCount = 0;
 Game.prototype.FPS = 0;
 Game.prototype.LastTickCount = new Date().getTime();
+Game.prototype.GameEnd = null;
 Game.prototype.Logic = null;
 Game.prototype.Debug = false;
 Game.prototype.GameStartTime = null;
@@ -27,6 +28,7 @@ Game.prototype.ShowTitleScreen = true;
 Game.prototype.ShowHelp = false;
 Game.prototype.StartGame = false;
 Game.prototype.InGame = false;
+Game.prototype.GameOver = false;
 Game.prototype.FadeStepCount = 0;
 
 
@@ -80,7 +82,7 @@ Game.prototype.Initialise = function () {
 Game.prototype.Update = function () {//modifier) {
     var controller = Game.prototype;
     var ship = controller.Ship;
-
+    
     if (controller.InGame) { //IN GAME!
         if (38 in keysDown) { // Player holding up
             ship.Up();
@@ -95,7 +97,7 @@ Game.prototype.Update = function () {//modifier) {
             ship.Right();
         }
         if (90 in keysDown) { //Z
-            //ship.Shoot();
+            ship.Boost = true;
         }
         if (88 in keysDown) { //X          
         }
@@ -103,17 +105,31 @@ Game.prototype.Update = function () {//modifier) {
     else {
         if (90 in keysDown) { //Z
             controller.ShowTitleScreen = false;
+            controller.ShowHelp = false;
             controller.InGame = true;
             controller.GameStartTime = new Date().getTime();
 
         }
-        if (88 in keysDown) { //X
-            controller.ShowTitleScreen = false;
-            controller.ShowHelp = true;
+        if (controller.ShowTitleScreen) {
+            if (88 in keysDown) { //X
+                controller.ShowTitleScreen = false;
+                controller.ShowHelp = true;
+
+                var settings = new TypeWriterSettings();
+                settings.Speed = 80;
+                settings.Text = "The aim of the game is to collide your space ship into junk, to break it apart and protect the earth from atmospheric junk. Use up, down, left, right arrow keys to control the ship, and hold z for nitro boost!";
+                Game.prototype.TypeWriter.Clear();
+                Game.prototype.TypeWriter.TypeText(settings, controller.Context);
+            }
         }
     }
 };
 
+Game.prototype.CanvasClicked = function () {
+    if (Game.prototype.GameOver) {
+        window.location = "http://craigpayne.info";
+    }
+}
 Game.prototype.Render = function () {
     var controller = Game.prototype;
 
@@ -136,10 +152,33 @@ Game.prototype.Render = function () {
         controller.Context.fillStyle = "white";
         controller.Context.font = "bold 14px Courier New";
         controller.Context.fillText("PRESS 'Z' TO START", 250, 350);
+        controller.Context.fillText("PRESS 'X' FOR HELP", 250, 370);
+
+    }
+
+    if (controller.ShowHelp) {
+
+        var img = new Image();
+        img.src = "agent13.png";
+
+
+        controller.Context.fillStyle = "#72AFFF";
+        controller.Context.fillRect(100, 50, 440, 280);
+        controller.Context.drawImage(img, 120, 70, 100, 100);
+        controller.TypeWriter.Render(controller.Context, 300);
+
+
+        controller.Context.fillStyle = "yellow";
+        controller.Context.font = "bold 70px Courier New";
+        controller.Context.fillText("AgentXIII", 150, 300);
+
+
+        controller.Context.fillStyle = "white";
+        controller.Context.font = "bold 14px Courier New";
+        controller.Context.fillText("PRESS 'Z' TO START", 250, 350);
     }
 
     if (controller.InGame) { //IN GAME!
-        controller.Ship.Render(controller.Context);
         controller.Logic.Render(controller.Context);
 
         controller.Context.fillStyle = "white";
@@ -151,10 +190,55 @@ Game.prototype.Render = function () {
         var time = new Date().getTime() - controller.GameStartTime;
         controller.Context.fillText((time / 1000) + "s", 50, 465);
 
+        //render atmosphere
+        controller.Context.beginPath();
+        controller.Context.arc(-70, 242, 160, 0, 2 * Math.PI, false);
+        controller.Context.strokeStyle = "grey";
+        controller.Context.lineWidth = 3;
+        controller.Context.fillStyle = "#111111";
+        controller.Context.fill();
+        controller.Context.stroke();
+
+        //render earth
         controller.Context.beginPath();
         controller.Context.arc(-100, 240, 150, 0, 2 * Math.PI, false);
         controller.Context.fillStyle = "blue";
         controller.Context.fill();
+
+        controller.Context.beginPath();
+        controller.Context.moveTo(0, 170);
+        controller.Context.lineTo(15, 190);
+        controller.Context.lineTo(22, 220);
+        controller.Context.lineTo(17, 280);
+        controller.Context.lineTo(0, 290);
+        controller.Context.fillStyle = "green";
+        controller.Context.fill();
+
+        controller.Context.beginPath();
+        controller.Context.moveTo(20, 290);
+        controller.Context.lineTo(25, 295);
+        controller.Context.lineTo(27, 310);
+        controller.Context.lineTo(20, 330);
+        controller.Context.lineTo(15, 330);
+        controller.Context.lineTo(12, 310);
+        controller.Context.fillStyle = "green";
+        controller.Context.fill();
+
+        controller.Ship.Render(controller.Context);
+    }
+
+    if (controller.GameOver) {
+        controller.Context.fillStyle = "white";
+        controller.Context.font = "bold 50px Courier New";
+
+        controller.Context.fillText("Game Over!!", 150, 150);
+        controller.Context.font = "bold 30px Courier New";
+
+        controller.Context.fillText("Score:" + GameLogic.prototype.Score, 220, 250);
+        var time = controller.GameEnd - controller.GameStartTime;
+        controller.Context.fillText((time / 1000) + "s", 220, 200);
+        controller.Context.fillText("Check out my blog: ", 100, 300);
+        controller.Context.fillText("http://craigpayne.info", 100, 340);
     }
 
     if (controller.Debug) {
@@ -168,12 +252,12 @@ Game.prototype.Render = function () {
             if (GameLogic.prototype.Rocks[i] != null)
                 rockCount += 1;
         }
-            
+
         controller.Context.fillStyle = "white";
         controller.Context.font = "bold 16px Courier New";
         controller.Context.fillText(
             " Rocks:" + rockCount +
-            " Explosions:" + explosionCount + 
+            " Explosions:" + explosionCount +
             " ShipX:" + controller.Ship.X +
             " ShipY:" + controller.Ship.Y, 5, 465);
     }

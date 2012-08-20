@@ -7,18 +7,22 @@
     <script src="TypeWriter.js" type="text/javascript"></script>
     <style type="text/css">
         body {
-	        padding:0px;
-	        text-align:center;
+            padding:0px;
+            text-align:center;
             background-color: #010F35;
             height: 100%;
             width: 100%;
             color: white;
             font-family:arial, Serif;
 
-	    }
+        }
         .shadow{
             box-shadow: 1px 1px 8px gray;
             horiz-align: center;      
+        }
+        h1 {
+            padding: 0px;
+            margin: 2px;
         }
               
     </style>
@@ -26,13 +30,16 @@
 <body style="margin: 0px; padding: 0px;">
     <div>
         <h1>Agent XIII</h1>
-        <h3>Craig Payne's (ErrorOccured) submission for js13kGames contest</h3>
-        <br/>
+        Attack of the atmospheric space junk!<br/>
         <canvas id="gameCanvas" class="shadow" width="640" height="480"></canvas>
         <br/>
-        <a href="mailto:craigpayne1985@googlemail.com">craigpayne1985@googlemail.com</a>
-
+        <a href="mailto:craigpayne1985@googlemail.com">craigpayne1985@googlemail.com</a> <a href="http://craigpayne.info">Craigs Blog</a>
+        <br/>
+        Craig Payne's (ErrorOccured) submission for js13kGames contest
+        
         <script type="text/javascript">
+            //document.getElementById("gameCanvas").setAttribute("onclick", "javascript:Game.prototype.CanvasClicked();");
+
             function ErrorOccuredGames() {}
             window.ErrorOccuredGames = new ErrorOccuredGames();
             window.ErrorOccuredGames.game = new Game();

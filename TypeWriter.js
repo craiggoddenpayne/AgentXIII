@@ -4,17 +4,17 @@
 
 TypeWriter.prototype._text = "";
 
-TypeWriter.prototype.TextColor = "#999999";
+TypeWriter.prototype.TextColor = "white";
 TypeWriter.prototype.Settings = null;
 TypeWriter.prototype.Context = null;
 TypeWriter.prototype.Initialise = function () {
     TypeWriter.prototype.Settings = new TypeWriterSettings();
+    setInterval(TypeWriter.prototype.Tick, 50);
 };
 
 TypeWriter.prototype.TypeText = function (settings, context) {
     TypeWriter.prototype.Context = context;
     TypeWriter.prototype.Settings = settings;
-    setInterval(TypeWriter.prototype.Tick, 50);
 };
 
 TypeWriter.prototype._charCount =0;
@@ -39,6 +39,12 @@ TypeWriter.prototype.Render = function (context, width) {
      for(var i=0; i < lines.length; i++){
         context.fillText(lines[i], 250, (20 * (i+1))+ 50);
      }
+};
+
+TypeWriter.prototype.Clear = function() {
+    TypeWriter.prototype._charCount = 0;
+    TypeWriter.prototype._ticksForRender = 0;
+    TypeWriter.prototype._text = "";
 };
 
 TypeWriter.prototype._convertToLines = function(context, text, maxWidth){

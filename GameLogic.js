@@ -63,10 +63,10 @@ GameLogic.prototype.Tick = function () {
         var rock = GameLogic.prototype.Rocks[j];
         if (rock != null) {
 
-            if (rock.X > Game.prototype.Ship.X) {
-                if (rock.X < Game.prototype.Ship.X + 60) {
-                    if (rock.Y > Game.prototype.Ship.Y) {
-                        if (rock.Y < Game.prototype.Ship.Y + 40) {
+            if (rock.X > Game.prototype.Ship.X - 20) {
+                if (rock.X < Game.prototype.Ship.X + 30) {
+                    if (rock.Y > Game.prototype.Ship.Y - 20) {
+                        if (rock.Y < Game.prototype.Ship.Y + 20) {
                             GameLogic.prototype.Score += 10 * rock.SizeModifier;
                             GameLogic.prototype.Rocks[j] = null;
                             var explosion = new Explosion();
@@ -100,10 +100,18 @@ GameLogic.prototype.Tick = function () {
     //clean up rocks
     for (i = 0; i < GameLogic.prototype.Rocks.length; i++) {
         if (GameLogic.prototype.Rocks[i] != null) {
-            if (GameLogic.prototype.Rocks[i].X < -100) {
+            if (GameLogic.prototype.Rocks[i].X < -1) {
+                if (GameLogic.prototype.Rocks[i].Y > 100 && GameLogic.prototype.Rocks[i].Y < 540) {
+                    //the rock hit the earth, take off some health
+                    Game.prototype.Ship.Health -= 5 * GameLogic.prototype.Rocks[i].SizeModifier;
+
+                    if (Game.prototype.Ship.Health < 1) {
+                        Game.prototype.GameOver = true;
+                        Game.prototype.GameEnd = new Date().getTime();
+                        Game.prototype.InGame = false;
+                    }
+                }
                 GameLogic.prototype.Rocks[i] = null;
-                //the rock hit the earth, take off some health
-                Game.prototype.Ship.Health -= 1;
             }
         }
     }

@@ -4,28 +4,45 @@
 }
 
 Ship.prototype = {
-    Health: 100,
+    Boost: false,
+    Health: 500,
     X: 100,
     Y: 200,
     Up: function () {
         if (Ship.prototype.Y > 10) {
             Ship.prototype.Y -= 2;
+            if (Ship.prototype.Boost) {
+                Ship.prototype.Y -= 1;
+                Ship.prototype.Boost = false;
+            }
         }
     },
     Down: function () {
         if (Ship.prototype.Y < Game.prototype.Settings.ViewPort().height - 20) {
             Ship.prototype.Y += 2;
+            if (Ship.prototype.Boost) {
+                Ship.prototype.Y += 1;
+                Ship.prototype.Boost = false;
+            }
         }
     },
     Left: function () {
         if (Ship.prototype.X > 50) {
             Ship.prototype.X -= 2;
+            if (Ship.prototype.Boost) {
+                Ship.prototype.X -= 1;
+                Ship.prototype.Boost = false;
+            }
         }
     },
     Right: function () {
         if (Ship.prototype.X < Game.prototype.Settings.ViewPort().width - 20) {
             Ship.prototype.X += 2;
-        }
+            if (Ship.prototype.Boost) {
+                Ship.prototype.X += 1;
+                Ship.prototype.Boost = false;
+            }
+        }      
     },
     Tick: function () {
     },
@@ -36,14 +53,14 @@ Ship.prototype = {
         linearGradient.addColorStop(1, 'lime');
         context.fillStyle = linearGradient;
         //health
-        var healthSize = (600 / 100) * Game.prototype.Ship.Health;
+        var healthSize = (600 / 500) * Game.prototype.Ship.Health;
         context.fillRect(20, 20, healthSize, 10);
         context.fillStyle = "white";
 
         context.fillStyle = "white";
-        context.font = "bold 10px Courier New";
+        context.font = "bold 14px Courier New";
         context.fillText("Earth Atmospheric Defence Level", 30, 40);
-    
+
         context.strokeStyle = "white";
         context.lineWidth = 2;
         context.beginPath();
@@ -99,6 +116,9 @@ Ship.prototype = {
         context.lineTo(ship.X, ship.Y + 8);
         context.lineTo(ship.X, ship.Y);
         context.fill();
+
+        //context.fillStyle = "blue";
+        //context.fillRect(ship.X - 20, ship.Y - 20, 40, 40);
 
     }
 };
