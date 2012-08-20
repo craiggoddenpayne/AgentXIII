@@ -42,10 +42,11 @@ Ship.prototype = {
                 Ship.prototype.X += 1;
                 Ship.prototype.Boost = false;
             }
-        }      
+        }
     },
     Tick: function () {
     },
+    ColourTick: 0,
     Render: function (context) {
         //render health
         var linearGradient = context.createLinearGradient(0, 0, 320, 0);
@@ -72,19 +73,34 @@ Ship.prototype = {
         context.stroke();
 
         //render ship
-        var ship = Ship.prototype;
-        context.fillStyle = "orange";
+        var ship = Game.prototype.Ship;
+        switch (ship.ColourTick) {
+            case 0: context.strokeStyle = "purple"; break;
+            case 1: context.strokeStyle = "red"; break;
+            case 2: context.strokeStyle = "orange"; break;
+            case 3: context.strokeStyle = "yellow"; break;
+            case 4: context.strokeStyle = "blue"; break;
+            case 5: context.strokeStyle = "lime"; break;
+            case 6: context.strokeStyle = "cyan"; break;
+            case 7: context.strokeStyle = "white"; break;
+            case 8: context.strokeStyle = "brown"; break;
+            case 9: context.strokeStyle = "pink"; break;
+        }
+        ship.ColourTick += 1;
+        if (ship.ColourTick == 9)
+            ship.ColourTick = 0;
+
+        context.fillStyle = "purple";
         context.beginPath();
         context.moveTo(ship.X + 5, ship.Y - 15);
         context.lineTo(ship.X + 60, ship.Y);
         context.lineTo(ship.X + 5, ship.Y + 15);
         context.fill();
-        context.strokeStyle = "green";
         context.lineWidth = 2;
         context.stroke();
 
 
-        context.fillStyle = "cyan";
+        context.fillStyle = "lime";
         context.beginPath();
         context.moveTo(ship.X, ship.Y);
         context.lineTo(ship.X, ship.Y - 5);
@@ -96,7 +112,6 @@ Ship.prototype = {
         context.lineTo(ship.X, ship.Y + 5);
         context.lineTo(ship.X, ship.Y);
         context.fill();
-        context.strokeStyle = "purple";
         context.lineWidth = 2;
         context.stroke();
 

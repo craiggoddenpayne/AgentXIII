@@ -8,9 +8,7 @@ function Game() {
     return this;
 };
 
-var keysDown = {};
-
-
+Game.prototype.keysDown = {};
 Game.prototype.Canvas = null;  
 Game.prototype.Context = null;
 Game.prototype.Ship = null;
@@ -50,11 +48,26 @@ Game.prototype.Initialise = function () {
     var controller = Game.prototype;
 
     addEventListener("keydown", function (e) {
-        keysDown[e.keyCode] = true;
+        Game.prototype.keysDown[e.keyCode] = true;
     }, false);
 
     addEventListener("keyup", function (e) {
-        delete keysDown[e.keyCode];
+        delete Game.prototype.keysDown[e.keyCode];
+    }, false);
+
+    addEventListener("mousedown", function (e) {
+        if (Game.prototype.InGame) {
+            if (e.clientY < Game.prototype.Ship.Y) {
+                Game.prototype.keysDown[38] = true;
+            } else {
+                Game.prototype.keysDown[40] = true;
+            }
+        }
+    }, false);
+
+    addEventListener("mouseup", function () {
+        delete Game.prototype.keysDown[38];
+        delete Game.prototype.keysDown[40];
     }, false);
 
     Game.prototype.TypeWriter = new TypeWriter();
@@ -68,7 +81,7 @@ Game.prototype.Initialise = function () {
     controller.Logic = new GameLogic();
     controller.Stars.Initialise();
     controller.TypeWriter.Initialise();
-    controller.Logic.Initialise();    
+    controller.Logic.Initialise();
 
     setInterval(controller.Tick, 5);
     setInterval(controller.Render, 60);
@@ -82,28 +95,28 @@ Game.prototype.Initialise = function () {
 Game.prototype.Update = function () {//modifier) {
     var controller = Game.prototype;
     var ship = controller.Ship;
-    
+
     if (controller.InGame) { //IN GAME!
-        if (38 in keysDown) { // Player holding up
+        if (38 in Game.prototype.keysDown) { // Player holding up
             ship.Up();
         }
-        if (40 in keysDown) { // Player holding down
+        if (40 in Game.prototype.keysDown) { // Player holding down
             ship.Down();
         }
-        if (37 in keysDown) { // Player holding left
+        if (37 in Game.prototype.keysDown) { // Player holding left
             ship.Left();
         }
-        if (39 in keysDown) { // Player holding right
+        if (39 in Game.prototype.keysDown) { // Player holding right
             ship.Right();
         }
-        if (90 in keysDown) { //Z
+        if (90 in Game.prototype.keysDown) { //Z
             ship.Boost = true;
         }
-        if (88 in keysDown) { //X          
+        if (88 in Game.prototype.keysDown) { //X          
         }
     }
     else {
-        if (90 in keysDown) { //Z
+        if (90 in Game.prototype.keysDown) { //Z
             controller.ShowTitleScreen = false;
             controller.ShowHelp = false;
             controller.InGame = true;
@@ -111,13 +124,13 @@ Game.prototype.Update = function () {//modifier) {
 
         }
         if (controller.ShowTitleScreen) {
-            if (88 in keysDown) { //X
+            if (88 in Game.prototype.keysDown) { //X
                 controller.ShowTitleScreen = false;
                 controller.ShowHelp = true;
 
                 var settings = new TypeWriterSettings();
                 settings.Speed = 80;
-                settings.Text = "The aim of the game is to collide your space ship into junk, to break it apart and protect the earth from atmospheric junk. Use up, down, left, right arrow keys to control the ship, and hold z for nitro boost!";
+                settings.Text = "The aim of the game is to collide your space ship into junk, to break it apart and protect the earth from atmospheric junk. Controls: Up, Down, Left, Right arrow keys to control the ship, and hold Z for nitro boost! Mobile users click the screen to move the ship in the Y direction";
                 Game.prototype.TypeWriter.Clear();
                 Game.prototype.TypeWriter.TypeText(settings, controller.Context);
             }
@@ -125,11 +138,6 @@ Game.prototype.Update = function () {//modifier) {
     }
 };
 
-Game.prototype.CanvasClicked = function () {
-    if (Game.prototype.GameOver) {
-        window.location = "http://craigpayne.info";
-    }
-}
 Game.prototype.Render = function () {
     var controller = Game.prototype;
 
@@ -168,9 +176,9 @@ Game.prototype.Render = function () {
         controller.TypeWriter.Render(controller.Context, 300);
 
 
-        controller.Context.fillStyle = "yellow";
-        controller.Context.font = "bold 70px Courier New";
-        controller.Context.fillText("AgentXIII", 150, 300);
+        //controller.Context.fillStyle = "yellow";
+        //controller.Context.font = "bold 70px Courier New";
+        //controller.Context.fillText("AgentXIII", 150, 300);
 
 
         controller.Context.fillStyle = "white";
@@ -193,9 +201,25 @@ Game.prototype.Render = function () {
         //render atmosphere
         controller.Context.beginPath();
         controller.Context.arc(-70, 242, 160, 0, 2 * Math.PI, false);
-        controller.Context.strokeStyle = "grey";
+        controller.Context.strokeStyle = "#555555";
         controller.Context.lineWidth = 3;
-        controller.Context.fillStyle = "#111111";
+        controller.Context.fillStyle = "#444444";
+        if (Game.prototype.Ship.Health < 400) {
+            controller.Context.fillStyle = "#333333";
+            controller.Context.strokeStyle = "#444444";
+        }
+        if (Game.prototype.Ship.Health < 300) {
+            controller.Context.fillStyle = "#222222";
+            controller.Context.strokeStyle = "#333333";
+        }
+        if (Game.prototype.Ship.Health < 200) {
+            controller.Context.strokeStyle = "#222222";
+            controller.Context.fillStyle = "#111111";
+        }
+        if (Game.prototype.Ship.Health < 100) {
+            controller.Context.strokeStyle = "#111111";
+            controller.Context.fillStyle = "#000000";
+        }
         controller.Context.fill();
         controller.Context.stroke();
 
@@ -228,6 +252,11 @@ Game.prototype.Render = function () {
     }
 
     if (controller.GameOver) {
+        controller.ShowTitleScreen = false;
+        controller.ShowHelp = false;
+        controller.StartGame = false;
+        controller.InGame = false;
+
         controller.Context.fillStyle = "white";
         controller.Context.font = "bold 50px Courier New";
 
